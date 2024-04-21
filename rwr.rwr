@@ -1,23 +1,36 @@
-RWR {
-  top [ws1 name ws2 lb ws4 rule+ ws5 rb ws3 more*) = ‛«rule»«more»’
-  more [name ws2 lb ws4 rule* ws5 rb ws3] = ‛«rule»’
-  rule [lhs ws1 keq ws2 rws] = ‛«getRuleName ()»’
-  RuleLHS_down [name lb Params* rb ws downString ws2 ] = ‛«name»: function («extractFormals (Params)») {\n_ruleEnter («name»);«setRuleName (name)»\nvar _0 = «downstring.rwr ()»;\n«Params»’
-  RuleLHS_nodown [name lb Params* rb ] = ‛«name»: function («extractFormals (Params)») {\n_ruleEnter («name»);«setRuleName (name)»«Params»’
-  rewriteString [lq cs* rq ws] = ‛\‛«cs»\’’
-  downString [lq cs* rq] = ‛\‛«cs»\’’
+rwr {
+  top [ws1 name ws2 lb ws3 rule+ ws4 rb ws5] = ‛{
+«rule»
+    _terminal: function () { return this.sourceString; },
+    _iter: function (...children) { return children.map(c => c.rwr ()); },
+    spaces: function (x) { return this.sourceString; },
+    space: function (x) { return this.sourceString; }
+}
+’
+  rule [ws1 name ws2 lb ws3 param* ws4 rb ws5 downMechanism? ws6 _eq ws7 s] ‛\n«_.setRuleName (name)»;\n«_.resetTreeWalker ()»;’ = ‛
+«name» : function («param») {
+_ruleEnter ("«_.getRuleName ().rwr ()»");
+«downMechanism»
+«_.expandTreeWalker ()»
+_ruleExit ("«_.getRuleName ().rwr ()»");
+return \\`\\$\\{«s»\\}\\`;
+’
+
+  rewriteString [lq cs* rq ws] = ‛«cs»’
+  downMechanism [lq cs* rq] = ‛«cs»’
   char_eval [lb cs* rb] = ‛«cs»’
-  char_newline [c] = ‛«c»’
-  char_esc [c] = ‛«c»’
+  char_newline [_ c] = ‛«c»’
+  char_esc [_ c] = ‛«c»’
   char_raw [c] = ‛«c»’
   nonBracketChar [c] = ‛«c»’
   name [first rest*] = ‛«first»«rest»’
   nameFirst [c] = ‛«c»’
   nameRest [c] = ‛«c»’
-  Param_plus [name suffix] = ‛\nvar «name» = _«name».rwr ().join ('');’
-  Param_star [name suffix] = ‛\nvar «name» = _«name».rwr ().join ('');’
-  Param_opt [name suffix] = ‛\nvar «name» = _«name».rwr ().join ('');’
-  Param_flat [name suffix] = ‛\nvar «name» = _«name».rwr ();’
+  param [pdef ws] = ‛«pdef»’
+  paramDef_plus [name suffix] = ‛«_.appendTreeWalkerCode (`\n${name} = ${name}.rwr ().join ('');`)»«name»’
+  paramDef_star [name suffix] = ‛«_.appendTreeWalkerCode (`\n${name} = ${name}.rwr ().join ('');`)»«name»’
+  paramDef_opt [name suffix] = ‛«_.appendTreeWalkerCode (`\n${name} = ${name}.rwr ().join ('');`)»«name»’
+  paramDef_flat [name] = ‛«_.appendTreeWalkerCode (`\n${name} = ${name}.rwr ();`)»«name»’
   comment [slsl cs* nl] = ‛’
 }
 

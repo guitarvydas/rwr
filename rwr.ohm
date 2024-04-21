@@ -1,12 +1,8 @@
-RWR {
-top = spaces name spaces "{" spaces rule+ spaces "}" spaces more*
-more = name spaces "{" spaces rule* spaces "}" spaces
-rule = applySyntactic<RuleLHS> spaces "=" spaces rewriteString
-RuleLHS = 
-  | name "[" Param* "]" spaces downString spaces -- down
-  | name "[" Param* "]" -- nodown
+rwr {
+top = spaces name spaces "{" spaces rule+ spaces "}" spaces
+rule = spaces name spaces "[" spaces param* spaces "]" spaces downMechanism? spaces "=" spaces rewriteString
 rewriteString = "‛" char* "’" spaces
-downString = "‛" char* "’"
+downMechanism = "‛" char* "’"
 char =
   | "«" nonBracketChar* "»" -- eval
   | "\\" "n" -- newline
@@ -16,7 +12,8 @@ nonBracketChar = ~"»" ~"«"  ~"’" any
 name = nameFirst nameRest*
 nameFirst = "_" | letter
 nameRest = "_" | alnum
-Param =
+param = paramDef spaces
+paramDef =
   | name "+" -- plus
   | name "*" -- star
   | name "?" -- opt
