@@ -14,6 +14,7 @@ _ruleEnter ("«_.getRuleName ().rwr ()»");
 «_.expandTreeWalker ()»
 _ruleExit ("«_.getRuleName ().rwr ()»");
 return \\`\\$\\{«s»\\}\\`;
+}
 ’
 
   rewriteString [lq cs* rq ws] = ‛«cs»’
