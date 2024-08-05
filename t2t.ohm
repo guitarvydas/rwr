@@ -1,8 +1,8 @@
 t2t {
   main = applySyntactic<ParameterDef>* applySyntactic<GrammarDef> rewriteDef
-  ParameterDef = "#" "parameter" name
-  GrammarDef = "#" "grammar" name Rule+
-  rewriteDef = "#" spaces "rewrite" spaces rewriteRule+
+  ParameterDef = "% parameter" name
+  GrammarDef = "% grammar" name Rule+
+  rewriteDef = "% rewrite" spaces rewriteRule+
 
 
   // these patterns were stolen from OhmJS' ohm.ohm ... 
@@ -126,20 +126,19 @@ t2t {
   // end stolen grammar parsing section
 
 
-
   // rewrite parsing section
-  rewriteRule = rwName spaces "[" spaces rwCstPredicate+ "]" spaces "=" spaces rewriteScope
+  rewriteRule = rwName spaces "[" spaces (rwCstPredicate spaces)+ "]" spaces "=" spaces rewriteScope spaces
   rwName = name
   rwCstName = name
   rwCstPredicate =
-    | "(" spaces rwName+ ")" spaces ("+" | "*" | "?") spaces -- tree
-    | rwCstName spaces -- name
+    | "(" spaces (rwName spaces)+ ")" spaces ("+" | "*" | "?") -- tree
+    | rwCstName -- name
   rewriteScope =
-    | "⎡" name "=" #rewriteFormatString #rewriteFormatString "⎦" -- with_parameter
+    | "⎡" spaces name spaces "=" spaces #rewriteFormatString spaces rewriteScope spaces "⎦" spaces -- with_parameter
     | #rewriteFormatString -- raw
   rewriteFormatString = "‛" formatChar* "’"
   formatChar =
-    | "‹" rwCstName "›" -- cst_interpolation
+    | "⟪" rwCstName "⟫" -- cst_interpolation
     | "«" rwCstName "»" -- parameter_interpolation
     | ~"‛" ~"’" ~"⎡" ~"⎦" ~"⟪" ~"⟫" ~"«" ~"»" any -- raw_character
 }

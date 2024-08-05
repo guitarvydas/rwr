@@ -22,15 +22,15 @@ D2J=${das2jsondir}/das2json
 
 dev: run
 
-run: _.py rwr.drawio.json transpile.drawio.json rwr.ohm rwr.rwr
+run: _.py t2t.drawio.json transpile.drawio.json t2t.ohm t2t.rwr
 	@./clr
-	python3 _.py ${_00_} ${_0D_} test.rwr main rwr.drawio.json transpile.drawio.json
+	python3 _.py ${_00_} ${_0D_} test.t2t main t2t.drawio.json transpile.drawio.json
 
 _.py : main.py ${0D}
 	cat ${0D} main.py >_.py
 
-rwr.drawio.json: rwr.drawio
-	$(D2J) rwr.drawio
+t2t.drawio.json: t2t.drawio
+	$(D2J) t2t.drawio
 
 transpile.drawio.json: $(_STD_)/transpile.drawio
 	$(D2J) $(_STD_)/transpile.drawio
